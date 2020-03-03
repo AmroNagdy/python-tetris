@@ -11,15 +11,15 @@ class AbstractTetromino(ABC):
             3: self.rotation_3
         }
 
-    def rotate_right(self):
-        self.rotation = (self.rotation + 1) % 4
+    def rotate(self, direction):
+        rotation_operator = 1 if direction == "R" else -1
+        self.rotation = (self.rotation + rotation_operator) % 4
 
-        return self.coords[self.rotation]
+    def get_coords(self):
+        return self.coords[self.rotation]()
 
-    def rotate_left(self):
-        self.rotation = (self.rotation - 1) % 4
-
-        return self.coords[self.rotation]
+    # Rotations are a list of 4 elements giving the (y, x) offsets of each
+    # block of a tetromino relative to the top left corner of some n x m array.
 
     @staticmethod
     def rotation_0():
