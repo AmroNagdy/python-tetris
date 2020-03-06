@@ -1,5 +1,7 @@
 from abc import ABC
 
+import curses
+
 class AbstractTetromino(ABC):
 
     def __init__(self):
@@ -12,8 +14,14 @@ class AbstractTetromino(ABC):
         }
 
     def rotate(self, direction):
-        rotation_operator = 1 if direction == "R" else -1
+        rotation_operator = 1 if input == 'R' else -1
         self.rotation = (self.rotation + rotation_operator) % 4
+
+    def rotate_left(self):
+        self.rotate('L')
+
+    def rotate_right(self):
+        self.rotate('R')
 
     def get_coords(self):
         return self.coords[self.rotation]()

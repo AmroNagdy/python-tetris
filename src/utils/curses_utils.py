@@ -6,12 +6,12 @@ class CursesUtils():
     def draw_coords(self, coords):
         for y, x in coords:
             self.stdscr.addch(y, x, '#')
-        refresh()
+        self.refresh()
 
     def clear_coords(self, coords):
         for y, x in coords:
             self.stdscr.addch(y, x, ' ')
-        refresh()
+        self.refresh()
 
     def redraw_board(self, board_array):
         for y, row in enumerate(board_array):
@@ -20,7 +20,11 @@ class CursesUtils():
                     self.stdscr.addch(y, x, ' ')
                 else:
                     self.stdscr.addch(y, x, '#')
-        refresh()
+        self.refresh()
 
     def refresh(self):
         self.stdscr.refresh()
+
+    def write_str(self, input):
+        self.stdscr.addstr(0, 0, input)
+        self.refresh()

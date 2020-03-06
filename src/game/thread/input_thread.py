@@ -4,10 +4,13 @@ class InputThread(Thread):
 
     def __init__(self, name, stdscr, input_queue):
         Thread.__init__(self)
+
         self.name = name
         self.stdscr = stdscr
         self.input_queue = input_queue
+
         self.should_run = True
+        self.daemon = True # Ensures thread dies with the game loop.
 
     def run(self):
         while self.should_run:
