@@ -14,7 +14,7 @@ class AbstractTetromino(ABC):
         }
 
     def rotate(self, direction):
-        rotation_operator = 1 if input == 'R' else -1
+        rotation_operator = -1 if input == 'L' else 1
         self.rotation = (self.rotation + rotation_operator) % 4
 
     def rotate_left(self):

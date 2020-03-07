@@ -1,8 +1,10 @@
 class Board():
 
     def __init__(self, height, width):
-        self.height = height
-        self.width = width
+        self.__height = height
+        self.__width = width
+        self.height = height - 1
+        self.width = width - 1
         self.array = [[0] * width for _ in range(height)]
 
     def set(self, coords):
@@ -20,7 +22,7 @@ class Board():
 
     def at_bottom(self, coords):
         for y, _ in coords:
-            if y + 1 > self.height - 1:
+            if y + 1 > self.height:
                 return True
 
         return False

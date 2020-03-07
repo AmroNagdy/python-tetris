@@ -16,5 +16,4 @@ class InputHandler():
     def handle(self, input):
         if input in self.controls.keys():
             self.controls[input]()
-            self.game_loop.curses_utils.write_to_debug(input)
             self.game_loop.curses_utils.refresh()
