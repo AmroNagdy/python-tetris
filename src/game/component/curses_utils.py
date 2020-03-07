@@ -1,7 +1,11 @@
+import curses
+
 class CursesUtils():
 
     def __init__(self, stdscr):
         self.stdscr = stdscr
+        height, width, begin_y, begin_x = 5, 40, 25, 0
+        self.debug_win = curses.newwin(height, width, begin_y, begin_x)
 
     def draw_coords(self, coords):
         for y, x in coords:
@@ -25,6 +29,6 @@ class CursesUtils():
     def refresh(self):
         self.stdscr.refresh()
 
-    def write_str(self, input):
-        self.stdscr.addstr(0, 0, input)
-        self.refresh()
+    def write_to_debug(self, input):
+        self.debug_win.addstr(0, 0, str(input))
+        self.debug_win.refresh()
