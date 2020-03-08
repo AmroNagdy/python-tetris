@@ -18,7 +18,7 @@ import time
 
 class GameLoop():
 
-    # TODO: Bugfix: When a piece is to the side of another, it can merge into it when rotating.
+    # TODO: Feature: Add border around board.
 
     def __init__(self, board, curses_utils, tick_frequency):
         self.board = board
@@ -49,10 +49,7 @@ class GameLoop():
     def tick(self):
         tetromino_location = self.get_tetromino_location()
 
-        # Check lose condition (i.e. the tetromino collides with an existing one).
-        if self.board.collides(tetromino_location):
-            self.stop()
-        elif self.board.should_set_tetromino(tetromino_location):
+        if self.board.should_set_tetromino(tetromino_location):
             self.board.set(tetromino_location)
 
             rows_cleared = self.board.clear_full_rows()
@@ -61,6 +58,9 @@ class GameLoop():
                 self.score_counter.update_score(rows_cleared)
             self.reset_cursor()
             self.tetromino = self.get_random_tetromino()
+            # Check lose condition (i.e. the tetromino collides with an existing one).
+            if self.board.collides(self.get_tetromino_location()):
+                self.stop()
             self.draw_tetromino()
         else:
             def cursor_update():
@@ -73,10 +73,10 @@ class GameLoop():
 
     # Move the cursor that points to the active location on the board.
     def move_cursor(self, direction):
-        operator = -1 if direction == 'L' else 1
-        if not self.tetromino_at_horizontal_edge(direction):
+        x_operator = -1 if direction == 'L' else 1
+        if not self.tetromino_at_horizontal_edge(direction) and not self.will_side_merge(x_operator):
             def cursor_update():
-                self.board_cursor_x += operator
+                self.board_cursor_x += x_operator
             self.move_tetromino(cursor_update)
 
     def move_cursor_left(self):
@@ -94,6 +94,10 @@ class GameLoop():
                 return True
 
         return False
+
+    def will_side_merge(self, x_operator):
+        future_tetromino_coords = [(y, x + x_operator) for y, x in self.get_tetromino_location()]
+        return self.board.collides(future_tetromino_coords)
 
     # Move and redraw the tetromino according to where the cursor should move.
     def move_tetromino(self, cursor_update):
@@ -124,16 +128,15 @@ class GameLoop():
     def rotate_tetromino(self, direction):
         previous_location = self.get_tetromino_location()
         self.curses_utils.clear_coords(previous_location)
+        self.tetromino.rotate(direction)
 
-        # if not self.rotation_will_cause_collision():
-        if direction == 'L':
-            self.tetromino.rotate_left()
+        if self.board.collides(self.get_tetromino_location()):
+            self.undo_rotation(direction)
+            self.curses_utils.redraw_board(self.board.array)
         else:
-            self.tetromino.rotate_right()
-
-        x_adjustment = self.get_x_adjustment()
-        if x_adjustment is not None:
-            self.adjust_board_cursor_x(x_adjustment)
+            x_adjustment = self.get_x_adjustment()
+            if x_adjustment is not None:
+                self.adjust_board_cursor_x(x_adjustment)
 
         self.draw_tetromino()
 
@@ -143,8 +146,11 @@ class GameLoop():
     def rotate_tetromino_right(self):
         self.rotate_tetromino('R')
 
-    def rotation_will_cause_collision(self):
-        pass
+    def undo_rotation(self, direction):
+        if direction == 'L':
+            self.rotate_tetromino_right()
+        else:
+            self.rotate_tetromino_left()
 
     # If the tetromino will go outside the board because of rotation, the cursor's
     # x coord needs to be adjusted.
