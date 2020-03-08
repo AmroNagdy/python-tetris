@@ -4,8 +4,13 @@ class CursesUtils():
 
     def __init__(self, stdscr):
         self.stdscr = stdscr
-        height, width, begin_y, begin_x = 5, 40, 25, 0
-        self.debug_win = curses.newwin(height, width, begin_y, begin_x)
+        self.score_win = self.init_score_win()
+
+    def init_score_win(self):
+        height, width, begin_y, begin_x = 2, 40, 21, 0
+        score_win = curses.newwin(height, width, begin_y, begin_x)
+
+        return score_win
 
     def draw_coords(self, coords):
         for y, x in coords:
@@ -29,6 +34,6 @@ class CursesUtils():
     def refresh(self):
         self.stdscr.refresh()
 
-    def write_to_debug(self, input):
-        self.debug_win.addstr(0, 0, str(input))
-        self.debug_win.refresh()
+    def write_score(self, score):
+        self.score_win.addstr(0, 0, 'Score: ' + str(score))
+        self.score_win.refresh()

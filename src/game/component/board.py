@@ -39,10 +39,9 @@ class Board():
 
     def clear_full_rows(self):
         self.array = [row for row in self.array if not all(e == 1 for e in row)]
-        array_size_diff = self.__height - len(self.array)
+        rows_cleared = self.__height - len(self.array)
 
-        if array_size_diff > 0:
-            self.array = self.build_2d_array(array_size_diff, self.__width) + self.array
-            return True
-        else:
-            return False
+        if rows_cleared > 0:
+            self.array = self.build_2d_array(rows_cleared, self.__width) + self.array
+
+        return rows_cleared

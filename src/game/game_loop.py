@@ -7,6 +7,7 @@ from src.tetromino.t import T
 from src.tetromino.z import Z
 from src.game.component.input_thread import InputThread
 from src.game.component.input_handler import InputHandler
+from src.game.component.score_counter import ScoreCounter
 from operator import itemgetter
 
 import queue
@@ -29,10 +30,12 @@ class GameLoop():
         self.should_run = True
         self.tetromino = self.get_random_tetromino()
         self.input_thread = InputThread(curses_utils.stdscr, InputHandler(self))
+        self.score_counter = ScoreCounter(curses_utils)
 
     def run(self):
         self.input_thread.start()
         self.draw_tetromino()
+        self.curses_utils.write_score(0)
 
         while self.should_run:
             time.sleep(self.tick_frequency)
@@ -43,9 +46,11 @@ class GameLoop():
 
         if self.board.should_set_tetromino(tetromino_location):
             self.board.set(tetromino_location)
-            if self.board.clear_full_rows():
+
+            rows_cleared = self.board.clear_full_rows()
+            if rows_cleared > 0:
                 self.curses_utils.redraw_board(self.board.array)
-            # TODO: Check here whether to clear rows.
+                self.score_counter.update_score(rows_cleared)
             self.reset_cursor()
             self.tetromino = self.get_random_tetromino()
             self.draw_tetromino()
