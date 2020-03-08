@@ -37,6 +37,13 @@ class Board():
 
         return False
 
+    def collides(self, coords):
+        for y, x in coords:
+            if self.array[y][x] == 1:
+                return True
+
+        return False
+
     def clear_full_rows(self):
         self.array = [row for row in self.array if not all(e == 1 for e in row)]
         rows_cleared = self.__height - len(self.array)

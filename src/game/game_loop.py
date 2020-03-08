@@ -18,8 +18,7 @@ import time
 
 class GameLoop():
 
-    # TODO: Feature: Lose condition.
-    # TODO: Bugfix: When a piece is to the side of another, it can merge into it.
+    # TODO: Bugfix: When a piece is to the side of another, it can merge into it when rotating.
 
     def __init__(self, board, curses_utils, tick_frequency):
         self.board = board
@@ -45,11 +44,15 @@ class GameLoop():
     def stop(self):
         self.should_run = False
         self.input_thread.stop()
+        self.curses_utils.display_end_screen(self.score_counter.total_score)
 
     def tick(self):
         tetromino_location = self.get_tetromino_location()
 
-        if self.board.should_set_tetromino(tetromino_location):
+        # Check lose condition (i.e. the tetromino collides with an existing one).
+        if self.board.collides(tetromino_location):
+            self.stop()
+        elif self.board.should_set_tetromino(tetromino_location):
             self.board.set(tetromino_location)
 
             rows_cleared = self.board.clear_full_rows()
