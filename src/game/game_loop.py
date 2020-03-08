@@ -43,6 +43,8 @@ class GameLoop():
 
         if self.board.should_set_tetromino(tetromino_location):
             self.board.set(tetromino_location)
+            if self.board.clear_full_rows():
+                self.curses_utils.redraw_board(self.board.array)
             # TODO: Check here whether to clear rows.
             self.reset_cursor()
             self.tetromino = self.get_random_tetromino()
@@ -88,10 +90,10 @@ class GameLoop():
 
     def tetromino_at_horizontal_edge(self, direction):
         tetromino_location = self.get_tetromino_location()
-        comparator = 0 if direction == 'L' else self.board.width
+        board_edge = 0 if direction == 'L' else self.board.width
 
         for _, x in tetromino_location:
-            if x == comparator:
+            if x == board_edge:
                 return True
 
         return False
@@ -100,6 +102,7 @@ class GameLoop():
         previous_location = self.get_tetromino_location()
         self.curses_utils.clear_coords(previous_location)
 
+        # if not self.rotation_will_cause_collision():
         if direction == 'L':
             self.tetromino.rotate_left()
         else:
@@ -108,21 +111,24 @@ class GameLoop():
         x_adjustment = self.get_x_adjustment()
         if x_adjustment is not None:
             self.adjust_board_cursor_x(x_adjustment)
-        else:
-            self.draw_tetromino()
+
+        self.draw_tetromino()
 
     def get_x_adjustment(self):
         tetromino_location = self.get_tetromino_location()
-        min_x = min(tetromino_location, key=itemgetter(1))[1]
-        max_x = max(tetromino_location, key=itemgetter(1))[1]
-        self.curses_utils.write_to_debug(max_x)
+        leftmost_y, leftmost_x = min(tetromino_location, key=itemgetter(1))
+        rightmost_y, rightmost_x = max(tetromino_location, key=itemgetter(1))
 
-        if min_x < 0:
-            return -min_x
-        elif max_x > self.board.width:
-            return self.board.width - max_x
+        # Check that it is not going outside the board's array.
+        if leftmost_x < 0:
+            return -leftmost_x
+        elif rightmost_x > self.board.width:
+            return self.board.width - rightmost_x
         else:
             return None
+
+    def rotation_will_cause_collision(self):
+        pass
 
     def adjust_board_cursor_x(self, x_adjustment):
         self.board_cursor_x += x_adjustment

@@ -5,7 +5,10 @@ class Board():
         self.__width = width
         self.height = height - 1
         self.width = width - 1
-        self.array = [[0] * width for _ in range(height)]
+        self.array = self.build_2d_array(height, width)
+
+    def build_2d_array(self, height, width):
+        return [[0] * width for _ in range(height)]
 
     def set(self, coords):
         self.update_array(coords, 1)
@@ -33,3 +36,13 @@ class Board():
                 return True
 
         return False
+
+    def clear_full_rows(self):
+        self.array = [row for row in self.array if not all(e == 1 for e in row)]
+        array_size_diff = self.__height - len(self.array)
+
+        if array_size_diff > 0:
+            self.array = self.build_2d_array(array_size_diff, self.__width) + self.array
+            return True
+        else:
+            return False
