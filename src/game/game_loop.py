@@ -18,8 +18,6 @@ import time
 
 class GameLoop():
 
-    # TODO: Feature: Add border around board.
-
     def __init__(self, board, curses_utils, tick_frequency):
         self.board = board
         self.curses_utils = curses_utils
@@ -34,8 +32,9 @@ class GameLoop():
 
     def run(self):
         self.input_thread.start()
-        self.draw_tetromino()
+        self.curses_utils.draw_board_border(self.board.height + 1, self.board.width + 1)
         self.curses_utils.write_score(0)
+        self.draw_tetromino()
 
         while self.should_run:
             time.sleep(self.tick_frequency)
@@ -45,6 +44,7 @@ class GameLoop():
         self.should_run = False
         self.input_thread.stop()
         self.curses_utils.display_end_screen(self.score_counter.total_score)
+        time.sleep(5)
 
     def tick(self):
         tetromino_location = self.get_tetromino_location()
@@ -130,13 +130,14 @@ class GameLoop():
         self.curses_utils.clear_coords(previous_location)
         self.tetromino.rotate(direction)
 
+        # Perform out-of-bounds adjustment if rotation takes the tetromino out the board.
+        x_adjustment = self.get_x_adjustment()
+        if x_adjustment is not None:
+            self.adjust_board_cursor_x(x_adjustment)
+
         if self.board.collides(self.get_tetromino_location()):
             self.undo_rotation(direction)
             self.curses_utils.redraw_board(self.board.array)
-        else:
-            x_adjustment = self.get_x_adjustment()
-            if x_adjustment is not None:
-                self.adjust_board_cursor_x(x_adjustment)
 
         self.draw_tetromino()
 

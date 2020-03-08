@@ -11,7 +11,7 @@ def main(stdscr):
     curses_utils.display_start_screen()
 
     board = Board(height=20, width=10)
-    GameLoop(board, curses_utils, tick_frequency=0.25).run()
+    GameLoop(board, curses_utils, tick_frequency=0.5).run()
 
 if __name__ == '__main__':
     curses.wrapper(main)
