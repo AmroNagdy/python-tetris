@@ -3,4 +3,4 @@ This is my first personal project in Python. I wanted to build an app that would
 
 # How To Use
 To have an optimal experience, I recommend running the app in a UNIX environment, since this project relies on the curses library.
-All you need to do is run the tetris.py script in the root folder. The controls are shown at start-up.
+Simply run the tetris.py script in the root folder; the controls are shown at start-up.
