@@ -1,22 +1,14 @@
-from src.tetromino.i import I
-from src.tetromino.j import J
-from src.tetromino.l import L
-from src.tetromino.o import O
-from src.tetromino.s import S
-from src.tetromino.t import T
-from src.tetromino.z import Z
-from src.game.component.input_thread import InputThread
-from src.game.component.input_handler import InputHandler
-from src.game.component.score_counter import ScoreCounter
-from operator import itemgetter
-
-import queue
-import sys
-import curses
 import random
 import time
+from operator import itemgetter
 
-class GameLoop():
+from src.input_handler import InputHandler
+from src.input_thread import InputThread
+from src.score_counter import ScoreCounter
+from src.tetromino import I, J, L, O, S, T, Z
+
+
+class GameLoop:
 
     def __init__(self, board, curses_utils, tick_frequency):
         self.board = board
@@ -27,13 +19,13 @@ class GameLoop():
         self.board_cursor_x = board.width // 2
         self.should_run = True
         self.tetromino = self.get_random_tetromino()
-        self.input_thread = InputThread(curses_utils.stdscr, InputHandler(self))
+        self.input_thread = InputThread(curses_utils.__stdscr, InputHandler(self))
         self.score_counter = ScoreCounter(curses_utils)
 
     def run(self):
         self.input_thread.start()
         self.curses_utils.draw_board_border(self.board.height + 1, self.board.width + 1)
-        self.curses_utils.write_score(0)
+        self.curses_utils.draw_score(0)
         self.draw_tetromino()
 
         while self.should_run:
@@ -43,7 +35,7 @@ class GameLoop():
     def stop(self):
         self.should_run = False
         self.input_thread.stop()
-        self.curses_utils.display_end_screen(self.score_counter.total_score)
+        self.curses_utils.draw_end_screen(self.score_counter.total_score)
         time.sleep(5)
 
     def tick(self):
@@ -65,6 +57,7 @@ class GameLoop():
         else:
             def cursor_update():
                 self.board_cursor_y += 1
+
             self.move_tetromino(cursor_update)
 
     def reset_cursor(self):
@@ -77,6 +70,7 @@ class GameLoop():
         if not self.tetromino_at_horizontal_edge(direction) and not self.will_side_merge(x_operator):
             def cursor_update():
                 self.board_cursor_x += x_operator
+
             self.move_tetromino(cursor_update)
 
     def move_cursor_left(self):
@@ -102,12 +96,12 @@ class GameLoop():
     # Move and redraw the tetromino according to where the cursor should move.
     def move_tetromino(self, cursor_update):
         previous_location = self.get_tetromino_location()
-        self.curses_utils.clear_coords(previous_location)
+        self.curses_utils.clear_relative_pixels(previous_location)
         cursor_update()
         self.draw_tetromino()
 
     def draw_tetromino(self):
-        self.curses_utils.draw_coords(self.get_tetromino_location())
+        self.curses_utils.draw_relative_pixels(self.get_tetromino_location())
 
     def drop_tetromino(self):
         while not self.board.should_set_tetromino(self.get_tetromino_location()):
@@ -115,19 +109,19 @@ class GameLoop():
 
     # Create and get a new tetromino.
     def get_random_tetromino(self):
-        tetrominoes = { 0: I, 1: J, 2: L, 3: O, 4: S, 5: T, 6: Z }
+        tetrominoes = {0: I, 1: J, 2: L, 3: O, 4: S, 5: T, 6: Z}
         return tetrominoes[random.randint(0, 6)]()
 
     # Get coords of the tetromino on the board.
     def get_tetromino_location(self):
-        tetromino_coords = self.tetromino.get_coords()
+        tetromino_coords = self.tetromino.get_offset()
 
         return [(self.board_cursor_y + y, self.board_cursor_x + x) for y, x in tetromino_coords]
 
     # Rotate the tetromino either clockwise (L) or anti-clockwise (R).
     def rotate_tetromino(self, direction):
         previous_location = self.get_tetromino_location()
-        self.curses_utils.clear_coords(previous_location)
+        self.curses_utils.clear_relative_pixels(previous_location)
         self.tetromino.rotate(direction)
 
         # Perform out-of-bounds adjustment if rotation takes the tetromino out the board.
