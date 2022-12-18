@@ -4,18 +4,13 @@ from typing import List, Final
 from src.grid_offset import GridOffset
 
 
+# noinspection PyArgumentList
+# curses API does not properly expose third argument for curses.window.addstr.
 class CursesUtils:
 
-    def __init__(self, stdscr: curses.window):
+    def __init__(self, stdscr: curses.window, score_win: curses.window):
         self.__stdscr: Final[curses.window] = stdscr
-        self.__score_win: Final[curses.window] = self.init_score_win()
-
-    @staticmethod
-    def init_score_win() -> curses.window:
-        height, width, begin_y, begin_x = 2, 40, 23, 0
-        score_win = curses.newwin(height, width, begin_y, begin_x)
-
-        return score_win
+        self.__score_win: Final[curses.window] = score_win
 
     def draw_board_border(self, height: int, width: int) -> None:
         self.__stdscr.addstr(0, 0, "+" + ("-" * width) + "+")
@@ -71,4 +66,5 @@ class CursesUtils:
         self.__score_win.clear()
         self.__stdscr.addstr(1, 1, "Thanks for playing!")
         self.__stdscr.addstr(2, 1, f"Your final score is: {final_score}")
+        self.__stdscr.addstr(3, 1, f"Press ENTER to exit.")
         self.refresh()

@@ -1,36 +1,41 @@
-from typing import Final, Dict, Callable
+from typing import Final, Dict, Callable, Optional
 
 from src.curses_utils import CursesUtils
-from src.input_enum import InputEnum
+from src.input import Input
 
 
 class InputHandler:
 
-    def __init__(
+    def __init__(self):
+        self.__controls: Optional[Dict[Input, Callable[[], None]]] = None
+
+    def initialise(
             self,
-            curses_utils: CursesUtils,
             move_right: Callable[[], None],
             move_left: Callable[[], None],
             drop: Callable[[], None],
             rotate_clockwise: Callable[[], None],
             rotate_anti_clockwise: Callable[[], None],
             quit: Callable[[], None]
-    ):
-        self.__curses_utils: Final[CursesUtils] = curses_utils
-        self.__controls: Final[Dict[InputEnum, Callable[[], None]]] = {
-            InputEnum.MOVE_RIGHT: move_right,
-            InputEnum.MOVE_LEFT: move_left,
-            InputEnum.DROP: drop,
-            InputEnum.ROTATE_CLOCKWISE: rotate_clockwise,
-            InputEnum.ROTATE_ANTI_CLOCKWISE: rotate_anti_clockwise,
-            InputEnum.QUIT: quit
+    ) -> None:
+        if self.__controls is not None:
+            raise RuntimeError(f"{type(self).__name__} is already initialised.")
+
+        self.__controls = {
+            Input.MOVE_RIGHT: move_right,
+            Input.MOVE_LEFT: move_left,
+            Input.DROP: drop,
+            Input.ROTATE_CLOCKWISE: rotate_clockwise,
+            Input.ROTATE_ANTI_CLOCKWISE: rotate_anti_clockwise,
+            Input.QUIT: quit
         }
 
-    def handle(self, input_enum: InputEnum) -> None:
-        if input_enum not in self.__controls:
-            # noinspection PyTypeChecker
-            valid_values = ", ".join(self.__controls.keys())
-            raise ValueError(f"Unrecognised input enum {input_enum}. Valid values: {valid_values}.")
+    def handle(self, input: Input) -> None:
+        if self.__controls is None:
+            raise ValueError("Cannot handle inputs until initialised.")
 
-        self.__controls[input_enum]()
-        self.__curses_utils.refresh()
+        if input not in self.__controls:
+            valid_values = ", ".join([str(enum) for enum in self.__controls.keys()])
+            raise ValueError(f"Unrecognised input enum {input}. Valid values: {valid_values}.")
+
+        self.__controls[input]()
