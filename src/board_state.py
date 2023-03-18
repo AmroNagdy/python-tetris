@@ -1,6 +1,6 @@
 import enum
 
-from tetromino import Tetromino, ITetromino, ZTetromino, TTetromino, STetromino, OTetromino, LTetromino, JTetromino
+from src.tetromino import Tetromino, ITetromino, ZTetromino, TTetromino, STetromino, OTetromino, LTetromino, JTetromino
 
 
 class BoardState(int, enum.Enum):

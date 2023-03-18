@@ -1,6 +1,5 @@
-from typing import Final, Dict, Callable, Optional
+from typing import Dict, Callable, Optional
 
-from src.curses_utils import CursesUtils
 from src.input import Input
 
 

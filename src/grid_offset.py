@@ -8,3 +8,6 @@ class GridOffset:
     """
     x: int
     y: int
+
+    def __iter__(self):
+        return iter((self.x, self.y))

@@ -1,8 +1,8 @@
 import abc
 from typing import List, Final, Dict
 
-from input import Input
 from src.grid_offset import GridOffset
+from src.input import Input
 
 
 class Tetromino(abc.ABC):

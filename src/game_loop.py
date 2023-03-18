@@ -2,11 +2,11 @@ import random
 import time
 from typing import Callable, Final, List, Optional
 
-from board import Board
-from board_state import BoardState
-from curses_utils import CursesUtils
-from grid_offset import GridOffset
-from input import Input
+from src.board import Board
+from src.board_state import BoardState
+from src.curses_utils import CursesUtils
+from src.grid_offset import GridOffset
+from src.input import Input
 from src.input_handler import InputHandler
 from src.input_thread import InputThread
 from src.score_counter import ScoreCounter
@@ -91,7 +91,7 @@ class GameLoop:
         self.__board_cursor_x = self.__board.width // 2
 
     def __move_cursor(self, direction: Input) -> None:
-        if direction != Input.MOVE_LEFT or direction != Input.MOVE_RIGHT:
+        if direction != Input.MOVE_LEFT and direction != Input.MOVE_RIGHT:
             raise ValueError(f"Direction {direction} is not valid for operation: move_cursor.")
 
         x_operator = -1 if direction == Input.MOVE_LEFT else 1
@@ -102,7 +102,7 @@ class GameLoop:
             self.__move_tetromino(cursor_update)
 
     def __is_tetromino_at_horizontal_edge(self, direction: Input) -> bool:
-        if direction != Input.MOVE_LEFT or direction != Input.MOVE_RIGHT:
+        if direction != Input.MOVE_LEFT and direction != Input.MOVE_RIGHT:
             raise ValueError(f"Direction {direction} is not valid for operation: tetromino_at_horizontal_edge.")
 
         board_edge = 0 if direction == Input.MOVE_LEFT else self.__board.width
@@ -139,7 +139,7 @@ class GameLoop:
             6: ZTetromino
         }
 
-        return tetrominoes[random.randint(0, len(tetrominoes))]()
+        return tetrominoes[random.randint(0, len(tetrominoes) - 1)]()
 
     def __get_tetromino_location(self) -> List[GridOffset]:
         tetromino_offsets = self.__tetromino.get_offset()
@@ -147,7 +147,7 @@ class GameLoop:
         return [GridOffset(self.__board_cursor_x + x, self.__board_cursor_y + y) for x, y in tetromino_offsets]
 
     def __rotate_tetromino(self, rotation: Input) -> None:
-        if rotation != Input.ROTATE_CLOCKWISE or rotation != Input.ROTATE_ANTI_CLOCKWISE:
+        if rotation != Input.ROTATE_CLOCKWISE and rotation != Input.ROTATE_ANTI_CLOCKWISE:
             raise ValueError(f"Rotation {rotation} is not valid for operation: rotate_tetromino.")
 
         previous_location = self.__get_tetromino_location()
@@ -166,7 +166,7 @@ class GameLoop:
         self.__draw_tetromino()
 
     def __undo_rotation(self, rotation: Input) -> None:
-        if rotation != Input.ROTATE_CLOCKWISE or rotation != Input.ROTATE_ANTI_CLOCKWISE:
+        if rotation != Input.ROTATE_CLOCKWISE and rotation != Input.ROTATE_ANTI_CLOCKWISE:
             raise ValueError(f"Rotation {rotation} is not valid for operation: undo_rotation.")
 
         if rotation == Input.ROTATE_ANTI_CLOCKWISE:

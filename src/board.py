@@ -1,6 +1,6 @@
 from typing import List, Final
 
-from board_state import BoardState
+from src.board_state import BoardState
 from src.grid_offset import GridOffset
 
 

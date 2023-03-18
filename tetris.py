@@ -1,9 +1,9 @@
 import curses
 
-from curses_window_factory import CursesWindowFactory
-from input_handler import InputHandler
-from input_thread import InputThread
-from score_counter import ScoreCounter
+from src.curses_window_factory import CursesWindowFactory
+from src.input_handler import InputHandler
+from src.input_thread import InputThread
+from src.score_counter import ScoreCounter
 from src.board import Board
 from src.curses_utils import CursesUtils
 from src.game_loop import GameLoop

@@ -1,7 +1,7 @@
 import enum
 
 
-class Input(int, enum.Enum):
+class Input(enum.IntEnum):
     MOVE_RIGHT = 0,
     MOVE_LEFT = 1,
     DROP = 2,
